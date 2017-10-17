@@ -1,11 +1,16 @@
-# mobile-lab
+# Halfway-mobile
 
-Posible features:
-- an input form
-- a list of items
-- display a chart
-- authentication
-- offline support - persist data on the local storage
-- online support - synchronize date to/from a remote location
-- intent - eg. show map coordinates on google maps, or send an email using gmail
-- animations
+1) Description: it's a mobile platform where you can hire people for a part-time job, also a user can apply for a part-time job.
+2) Features: 
+    i) Authentication
+    ii) View part-time jobs
+    iii) Apply for job
+    iv) CRUD on job
+    v) Notification about jobs
+    vi) Offline/online support
+    vii) Email if job accepted
+    viii) Char with the most wanted jobs
+    ix)
+3) User roles:
+    i) Customer
+    ii) Employer
