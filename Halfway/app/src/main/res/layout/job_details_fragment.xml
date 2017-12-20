@@ -1,96 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Job name: " />
-
-    <EditText
-        android:id="@+id/editJobName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Janitor" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Job description: " />
-
-    <EditText
-        android:id="@+id/editJobDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="simple tasks" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Job expiration date: " />
-
-    <EditText
-        android:id="@+id/editJobDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="21/02/2016" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Job employer: " />
-
-    <EditText
-        android:id="@+id/editJobEmployer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Emerson" />
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feedback:" />
+            android:text="Job name: " />
 
         <EditText
-            android:id="@+id/feebackEditText"
-            android:layout_width="match_parent"
+            android:id="@+id/editJobName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="complete this"
-            android:textColor="@color/colorPrimary"/>
+            android:text="Janitor" />
 
-        <Button
-            android:id="@+id/sendFeedbackButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@color/colorPrimaryDark"
-            android:text="Send feedback"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginBottom="10dp"/>
 
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Job description: " />
+
+        <EditText
+            android:id="@+id/editJobDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="simple tasks" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Job expiration date: " />
+
+        <EditText
+            android:id="@+id/editJobDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21/02/2016" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Job employer: " />
+
+        <EditText
+            android:id="@+id/editJobEmployer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Emerson" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:background="@color/colorPrimary"
-            android:text="Save"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Feedback:" />
+
+            <EditText
+                android:id="@+id/feebackEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="complete this"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/sendFeedbackButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="Send feedback"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@color/colorPrimary"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>
