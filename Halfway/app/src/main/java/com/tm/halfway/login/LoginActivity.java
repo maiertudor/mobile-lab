@@ -58,6 +58,11 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("Authorization", token);
                                 editor.putString("Owner", username);
+                                if("admin".equals(username)){
+                                    editor.putString("Role", "ADMIN");
+                                } else {
+                                    editor.putString("Role", "QUEST");
+                                }
                                 editor.apply();
 
                                 Intent loginIntent = new Intent(LoginActivity.this, MainActivity.class);

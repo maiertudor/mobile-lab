@@ -69,7 +69,7 @@ public class JobAddAsync extends AsyncTask<Object, Object, String> {
 
             response = httpClient.execute(request);
 
-                    /*Checking response */
+            /*Checking response */
             if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 //                Log.d("JobListAsync", response.getEntity().getContent());
                 BufferedReader bufferedReader = new BufferedReader(

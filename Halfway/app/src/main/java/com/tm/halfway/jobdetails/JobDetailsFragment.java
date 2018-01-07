@@ -146,6 +146,16 @@ public class JobDetailsFragment extends Fragment {
         editJobEmployer.setText(currentJob.getOwner());
 
         Button saveButton = (Button) view.findViewById(R.id.saveButton);
+
+        SharedPreferences sharedPref = getContext().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
+        String role = sharedPref.getString("Role", "null");
+
+        if("QUEST".equals(role)) {
+            saveButton.setAlpha(0);
+        } else {
+            saveButton.setAlpha(1);
+        }
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

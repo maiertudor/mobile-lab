@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.tm.halfway.R;
 import com.tm.halfway.jobdetails.JobAddAsync;
 import com.tm.halfway.jobdetails.JobDeleteAsync;
@@ -70,9 +72,25 @@ public class JobListAdapter extends ArrayAdapter<Job> {
 
         final Button removeJob = (Button) view.findViewById(R.id.removeJobButton);
 
+        SharedPreferences sharedPref = context.getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
+        String role = sharedPref.getString("Role", "null");
+
+        if("QUEST".equals(role)) {
+            removeJob.setAlpha(0);
+        } else {
+            removeJob.setAlpha(1);
+        }
+
         removeJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                fm.send(new RemoteMessage.Builder("jobs@gcm.googleapis.com")
+                        .setMessageId(Integer.toString(213123))
+                        .addData("my_message", "Hello World")
+                        .addData("my_action","SAY_HELLO")
+                        .build());
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("Are you sure you want to delete job: " + currentJob.getTitle())
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

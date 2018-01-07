@@ -95,6 +95,15 @@ public class JobsFragment extends Fragment {
         });
 
         Button addButton = (Button) headerView.findViewById(R.id.add_button);
+
+        String role = sharedPref.getString("Role", "null");
+
+        if("QUEST".equals(role)) {
+            addButton.setAlpha(0);
+        } else {
+            addButton.setAlpha(1);
+        }
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

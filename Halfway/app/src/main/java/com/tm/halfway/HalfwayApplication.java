@@ -2,6 +2,7 @@ package com.tm.halfway;
 
 import android.app.Application;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -18,5 +19,7 @@ public class HalfwayApplication extends Application {
         }
         LeakCanary.install(this);
         // Normal app init code...
+
+        FirebaseMessaging.getInstance().subscribeToTopic("jobs");
     }
 }
