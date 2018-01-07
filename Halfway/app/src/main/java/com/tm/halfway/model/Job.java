@@ -40,8 +40,8 @@ public class Job implements Serializable {
         this.created_at = date;
         this.updated_at = date;
         this.cost = 10F;
-        this.category = "UNKNOWN";
-        this.location = "UNKNOWN";
+        this.category = "Relatii publice";
+        this.location = "Cluj-Napoca";
     }
 
     public String getTitle() {

@@ -3,6 +3,7 @@ package com.tm.halfway.joblist;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -60,6 +61,7 @@ public class JobsFragment extends Fragment {
 
         final ListView jobsListView = (ListView) view.findViewById(R.id.jobsListId);
         final JobListAdapter jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
+
         jobsListView.setAdapter(jobListAdapter);
         View headerView = inflater.inflate(R.layout.jobs_header_view, container, false);
         jobsListView.addHeaderView(headerView);
@@ -68,13 +70,13 @@ public class JobsFragment extends Fragment {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String token = sharedPref.getString("Authorization", "null");
 
-        populateListViewOffline(jobListAdapter);
-//        if (!hasInternetConnection()) {
-//            populateListViewOffline(jobListAdapter);
-//
-//        } else {
-//            populateListViewOnline(token, jobListAdapter);
-//        }
+//        populateListViewOffline(jobListAdapter);
+        if (!hasInternetConnection()) {
+            populateListViewOffline(jobListAdapter);
+        } else {
+            populateListViewOnline(token, jobListAdapter);
+        }
+
         jobsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -118,7 +120,7 @@ public class JobsFragment extends Fragment {
                     JSONArray jsonArray = jsonObject.getJSONArray("jobs");
 
 //                    DateFormat df = DateFormat.getDateTimeInstance();
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jobJSON = jsonArray.getJSONObject(i);
@@ -126,11 +128,11 @@ public class JobsFragment extends Fragment {
                         job.setId(jobJSON.getString("id"));
                         job.setTitle(jobJSON.getString("title"));
                         job.setDescription(jobJSON.getString("description"));
-                        Date created_at = df.parse(jobJSON.getString("created_at"));
+                        Date created_at = df.parse(jobJSON.getString("createdAt"));
                         job.setCreated_at(created_at);
-                        Date updated_at = df.parse(jobJSON.getString("updated_at"));
+                        Date updated_at = df.parse(jobJSON.getString("updatedAt"));
                         job.setUpdated_at(updated_at);
-                        Date ends_at = df.parse(jobJSON.getString("ends_at"));
+                        Date ends_at = df.parse(jobJSON.getString("endsAt"));
                         job.setEnds_at(ends_at);
                         job.setCost(Float.valueOf(jobJSON.getString("cost")));
                         job.setOwner(jobJSON.getString("owner"));
@@ -142,6 +144,8 @@ public class JobsFragment extends Fragment {
 
                     if (jobsList.size() != tmpList.size()) {
                         jobsList.clear();
+                        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+                        mDatabaseHelper.onUpgrade(db, 0 ,0);
                         for (Job job : tmpList) {
                             if (job != null) {
                                 mDatabaseHelper.addJob(job);
@@ -180,7 +184,7 @@ public class JobsFragment extends Fragment {
     }
 
     private Job convertJob(Cursor data) {
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
         String id = data.getString(0);
         String title = data.getString(1);

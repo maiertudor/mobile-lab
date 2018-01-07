@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 if (usernameText != null && passwordText != null) {
-                    String username = String.valueOf(usernameText.getText());
+                    final String username = String.valueOf(usernameText.getText());
                     String password = String.valueOf(passwordText.getText());
 
                     new LoginAsync() {
@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences sharedPref = getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("Authorization", token);
+                                editor.putString("Owner", username);
                                 editor.apply();
 
                                 Intent loginIntent = new Intent(LoginActivity.this, MainActivity.class);

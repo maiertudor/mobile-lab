@@ -1,7 +1,9 @@
 package com.tm.halfway.create_job;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.tm.halfway.R;
+import com.tm.halfway.jobdetails.JobAddAsync;
 import com.tm.halfway.joblist.JobHelper;
 import com.tm.halfway.model.Job;
 
@@ -34,6 +37,7 @@ import static com.tm.halfway.R.id.editJobName;
  */
 
 public class CreateJobFragment extends Fragment {
+    private static final String TAG = "CreateJobFragment";
     private DatePickerDialog.OnDateSetListener mDataSetListener;
 
     @Nullable
@@ -56,12 +60,12 @@ public class CreateJobFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                JobHelper mDatabaseHelper = new JobHelper(getContext());
+                final JobHelper mDatabaseHelper = new JobHelper(getContext());
 
                 final Job newJob = new Job();
 
                 newJob.setTitle(String.valueOf(createJobName.getText()));
-                DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
                 Date result;
                 try {
                     result = df.parse(String.valueOf(createJobDate.getText()));
@@ -72,8 +76,25 @@ public class CreateJobFragment extends Fragment {
                 newJob.setDescription(String.valueOf(createJobDescription.getText()));
                 newJob.setOwner(String.valueOf(createJobEmployer.getText()));
 
-                mDatabaseHelper.addJob(newJob);
-                Toast.makeText(getContext(), "Saved new job details!", Toast.LENGTH_SHORT).show();
+                SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
+                String token = sharedPref.getString("Authorization", "null");
+                String owner = sharedPref.getString("Owner", null);
+                newJob.setOwner(owner);
+
+                new JobAddAsync(){
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+                        if ("success".equals(s)) {
+                            mDatabaseHelper.addJob(newJob);
+                        } else if ("noconnection".equals(s)) {
+                            mDatabaseHelper.addJob(newJob);
+                        } else {
+                            Log.e(TAG, "Error saving job");
+                        }
+                    }
+                }.execute(token, newJob);
+                Toast.makeText(getContext(), "Saving new job details...", Toast.LENGTH_SHORT).show();
 
                 getFragmentManager().popBackStackImmediate();
             }

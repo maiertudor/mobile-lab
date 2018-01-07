@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.tm.halfway.MainActivity;
 import com.tm.halfway.R;
 import com.tm.halfway.joblist.JobHelper;
 import com.tm.halfway.model.Job;
@@ -44,6 +46,7 @@ import java.util.Map;
 
 public class JobDetailsFragment extends Fragment {
 
+    private final String TAG = "JobDetailsFragment";
     private Job currentJob;
     private DatePickerDialog.OnDateSetListener mDataSetListener;
 
@@ -137,7 +140,7 @@ public class JobDetailsFragment extends Fragment {
 
         editJobName.setText(currentJob.getTitle());
         editJobDescription.setText(currentJob.getDescription());
-        DateFormat df = DateFormat.getDateTimeInstance();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         String result = df.format(currentJob.getEnds_at());
         editJobDate.setText(result);
         editJobEmployer.setText(currentJob.getOwner());
@@ -148,25 +151,18 @@ public class JobDetailsFragment extends Fragment {
             public void onClick(View view) {
                 JobHelper mDatabaseHelper = new JobHelper(getContext());
 
-                currentJob.setTitle(String.valueOf(editJobName.getText()));
-                DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-                Date result;
-                try {
-                    result = df.parse(String.valueOf(editJobDate.getText()));
-                    currentJob.setEnds_at(result);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                currentJob.setDescription(String.valueOf(editJobDescription.getText()));
-                currentJob.setOwner(String.valueOf(editJobEmployer.getText()));
+//                refreshCurrentJob(editJobName, editJobDate, editJobDescription, editJobEmployer);
+//
+//                if (mDatabaseHelper.updateJob(currentJob) == 1) {
+//                    Toast.makeText(getContext(), "Saved new job details!", Toast.LENGTH_SHORT).show();
+//                    getFragmentManager().popBackStackImmediate();
+//                } else {
+//                    Toast.makeText(getContext(), "Job couldn't be saved!", Toast.LENGTH_SHORT).show();
+//                }
 
-                if (mDatabaseHelper.updateJob(currentJob) == 1) {
-                    Toast.makeText(getContext(), "Saved new job details!", Toast.LENGTH_SHORT).show();
-                    getFragmentManager().popBackStackImmediate();
-                } else {
-                    Toast.makeText(getContext(), "Job couldn't be saved!", Toast.LENGTH_SHORT).show();
-                }
-//                saveJob(currentJob.getId(), String.valueOf(editJobName.getText()), String.valueOf(editJobDescription.getText()), String.valueOf(editJobDate.getText()), String.valueOf(editJobEmployer.getText()));
+                saveJob(currentJob.getId(), String.valueOf(editJobName.getText()), String.valueOf(editJobDescription.getText()), String.valueOf(editJobDate.getText()), String.valueOf(editJobEmployer.getText()));
+                Toast.makeText(getContext(), "Updating job...", Toast.LENGTH_SHORT).show();
+                getFragmentManager().popBackStackImmediate();
 
             }
         });
@@ -190,6 +186,20 @@ public class JobDetailsFragment extends Fragment {
 
     }
 
+    private void refreshCurrentJob(EditText editJobName, EditText editJobDate, EditText editJobDescription, EditText editJobEmployer) {
+        currentJob.setTitle(String.valueOf(editJobName.getText()));
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        Date result;
+        try {
+            result = df.parse(String.valueOf(editJobDate.getText()));
+            currentJob.setEnds_at(result);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        currentJob.setDescription(String.valueOf(editJobDescription.getText()));
+        currentJob.setOwner(String.valueOf(editJobEmployer.getText()));
+    }
+
     private void saveJob(String id, String title, String description, String date, String owner) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         Date result = null;
@@ -207,7 +217,20 @@ public class JobDetailsFragment extends Fragment {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String token = sharedPref.getString("Authorization", "null");
 
-        new JobUpdateAsync().execute(token, id, currentJob);
+        final JobHelper mDatabaseHelper = new JobHelper(getContext());
+        new JobUpdateAsync(){
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                if ("success".equals(s)) {
+                    mDatabaseHelper.updateJob(currentJob);
+                } else if ("noconnection".equals(s)) {
+                    mDatabaseHelper.updateJob(currentJob);
+                } else {
+                    Log.e(TAG, "Error saving job");
+                }
+            }
+        }.execute(token, id, currentJob);
     }
 
 

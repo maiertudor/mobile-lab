@@ -3,6 +3,7 @@ package com.tm.halfway.joblist;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -24,14 +25,13 @@ public class JobHelper extends SQLiteOpenHelper {
     private static final String COL1 = "id";
     private static final String COL2 = "title";
     private static final String COL3 = "description";
-    private static final String COL4 = "created_at";
-    private static final String COL5 = "updated_at";
-    private static final String COL6 = "ends_at";
+    private static final String COL4 = "createdAt";
+    private static final String COL5 = "updatedAt";
+    private static final String COL6 = "endsAt";
     private static final String COL7 = "cost";
     private static final String COL8 = "owner";
     private static final String COL9 = "category";
     private static final String COL10 = "location";
-
 
     public JobHelper(Context context) {
         super(context, TABLE_NAME, null, 2);
@@ -40,7 +40,7 @@ public class JobHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME
-                + " ( " + COL1 + " INTEGER PRIMARY KEY, "
+                + " ( " + COL1 + " TEXT PRIMARY KEY, "
                 + COL2 + " TEXT, "
                 + COL3 + " TEXT, "
                 + COL4 + " TEXT, "
@@ -72,7 +72,7 @@ public class JobHelper extends SQLiteOpenHelper {
 
     public boolean addJob(Job job) {
         SQLiteDatabase db = getWritableDatabase();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, job.getTitle());
         contentValues.put(COL3, job.getDescription());
@@ -105,7 +105,7 @@ public class JobHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean deleteJob(int jobID) {
+    public boolean deleteJob(String jobID) {
         SQLiteDatabase db = getWritableDatabase();
         String deleteJobQuery = "DELETE FROM " + TABLE_NAME + " WHERE "
                 + COL1 + " = '" + jobID + "'";
@@ -115,7 +115,7 @@ public class JobHelper extends SQLiteOpenHelper {
 
     public int updateJob(Job newJob) {
         SQLiteDatabase db = getWritableDatabase();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, newJob.getTitle());

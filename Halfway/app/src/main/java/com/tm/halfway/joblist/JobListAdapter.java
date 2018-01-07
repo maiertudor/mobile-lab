@@ -2,17 +2,19 @@ package com.tm.halfway.joblist;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tm.halfway.R;
+import com.tm.halfway.jobdetails.JobAddAsync;
+import com.tm.halfway.jobdetails.JobDeleteAsync;
 import com.tm.halfway.model.Job;
 
 import java.text.DateFormat;
@@ -24,6 +26,7 @@ import java.util.List;
  */
 
 public class JobListAdapter extends ArrayAdapter<Job> {
+    private static final String TAG = "JobListAdapter";
     private static List<Job> itemsList;
     private Context context;
     private int resLayout;
@@ -61,7 +64,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
         jobDescriptionTextView.setText(currentJob.getDescription());
         jobEmployerTextView.setText(currentJob.getOwner());
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         String date = dateFormat.format(currentJob.getEnds_at());
         jobDateTextView.setText(date);
 
@@ -75,10 +78,24 @@ public class JobListAdapter extends ArrayAdapter<Job> {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                JobHelper mDatabaseHelper = new JobHelper(getContext());
-                                mDatabaseHelper.deleteJob(Integer.parseInt(currentJob.getId()));
-                                itemsList.remove(currentJob);
-                                notifyDataSetChanged();
+                                final JobHelper mDatabaseHelper = new JobHelper(getContext());
+
+                                SharedPreferences sharedPref = context.getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
+                                String token = sharedPref.getString("Authorization", "null");
+                                new JobDeleteAsync() {
+                                    @Override
+                                    protected void onPostExecute(String s) {
+                                        super.onPostExecute(s);
+                                        if (!"success".equals(s) && !"noconnection".equals(s)) {
+                                            Log.e(TAG, "Error saving job");
+                                        } else {
+                                            mDatabaseHelper.deleteJob(currentJob.getId());
+                                            itemsList.remove(currentJob);
+                                            notifyDataSetChanged();
+                                        }
+                                    }
+                                }.execute(token, currentJob.getId());
+
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
