@@ -19,7 +19,5 @@ public class HalfwayApplication extends Application {
         }
         LeakCanary.install(this);
         // Normal app init code...
-
-        FirebaseMessaging.getInstance().subscribeToTopic("jobs");
     }
 }
