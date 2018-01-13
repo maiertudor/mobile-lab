@@ -14,4 +14,14 @@ public interface IHalfwayAPI {
 
     @GET("v1/jobs")
     Call<GetJobResponse> getJobs();
+    @GET("v1/jobs/created")
+    Call<GetJobResponse> getJobsCreated();
+    @GET("v1/jobs/updated")
+    Call<GetJobResponse> getJobsUpdated();
+    @GET("v1/jobs/ended")
+    Call<GetJobResponse> getJobsEnded();
+    @GET("v1/jobs/cost/asc")
+    Call<GetJobResponse> getJobsCostAscending();
+    @GET("v1/jobs/cost/desc")
+    Call<GetJobResponse> getJobsCostDescending();
 }

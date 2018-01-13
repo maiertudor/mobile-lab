@@ -53,6 +53,20 @@ public class JobsFragment extends Fragment {
     private Spinner mOrderSpinner;
     private JobsOrderEnum mOrderEnum;
     private JobListAdapter jobListAdapter;
+    private Callback<GetJobResponse> mGetJobsCallbackHandler = new Callback<GetJobResponse>() {
+        @Override
+        public void onResponse(Call<GetJobResponse> call, Response<GetJobResponse> response) {
+            Log.d(TAG, "onResponse: " + response);
+            ConvertionUtils.setDataToJobsResponse(response.body());
+
+            jobListAdapter.setItemsList(response.body().getJobs());
+        }
+
+        @Override
+        public void onFailure(Call<GetJobResponse> call, Throwable t) {
+            Log.d(TAG, "onFailure: " + t.getMessage());
+        }
+    };
 
     @Nullable
     @Override
@@ -131,21 +145,24 @@ public class JobsFragment extends Fragment {
         return view;
     }
 
-    private void populateListViewOnline(JobsOrderEnum mOrderEnum, final JobListAdapter jobListAdapter) {
-        ApiHelper.getApi().getJobs().enqueue(new Callback<GetJobResponse>() {
-            @Override
-            public void onResponse(Call<GetJobResponse> call, Response<GetJobResponse> response) {
-                Log.d(TAG, "onResponse: " + response);
-                ConvertionUtils.setDataToJobsResponse(response.body());
-
-                jobListAdapter.setItemsList(response.body().getJobs());
-            }
-
-            @Override
-            public void onFailure(Call<GetJobResponse> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
-            }
-        });
+    private void populateListViewOnline(JobsOrderEnum orderEnum, final JobListAdapter jobListAdapter) {
+        switch (orderEnum) {
+            case CREATED:
+                ApiHelper.getApi().getJobsCreated().enqueue(mGetJobsCallbackHandler);
+                break;
+            case UPDATED:
+                ApiHelper.getApi().getJobsUpdated().enqueue(mGetJobsCallbackHandler);
+                break;
+            case ENDING:
+                ApiHelper.getApi().getJobsEnded().enqueue(mGetJobsCallbackHandler);
+                break;
+            case COST_ASC:
+                ApiHelper.getApi().getJobsCostAscending().enqueue(mGetJobsCallbackHandler);
+                break;
+            case COST_DESC:
+                ApiHelper.getApi().getJobsCostDescending().enqueue(mGetJobsCallbackHandler);
+                break;
+        }
     }
 
     private boolean hasInternetConnection() {
