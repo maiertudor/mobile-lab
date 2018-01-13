@@ -21,8 +21,10 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.tm.halfway.R;
+import com.tm.halfway.api.ApiHelper;
 import com.tm.halfway.create_job.CreateJobFragment;
 import com.tm.halfway.jobdetails.JobDetailsFragment;
+import com.tm.halfway.model.BaseResponse;
 import com.tm.halfway.model.Job;
 
 import org.json.JSONArray;
@@ -36,6 +38,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 /**
  * Last edit by tudor.maier on 29/10/2017.
@@ -43,6 +49,7 @@ import java.util.List;
 
 public class JobsFragment extends Fragment {
 
+    private static final String TAG = JobsFragment.class.getSimpleName();
     private List<Job> jobsList;
     private JobHelper mDatabaseHelper;
 
@@ -119,6 +126,18 @@ public class JobsFragment extends Fragment {
     }
 
     private void populateListViewOnline(String token, final JobListAdapter jobListAdapter) {
+        ApiHelper.getApi().getJobs().enqueue(new Callback<BaseResponse<Object>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<Object>> call, Response<BaseResponse<Object>> response) {
+                Log.d(TAG, "onResponse: " + response);
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<Object>> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+
         new JobListAsync() {
             @Override
             protected void onPostExecute(String s) {

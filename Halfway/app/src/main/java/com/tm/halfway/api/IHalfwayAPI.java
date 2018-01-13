@@ -11,6 +11,6 @@ import retrofit2.http.GET;
 
 public interface IHalfwayAPI {
 
-    @GET("/v1/jobs")
+    @GET("v1/jobs")
     Call<BaseResponse<Object>> getJobs();
 }

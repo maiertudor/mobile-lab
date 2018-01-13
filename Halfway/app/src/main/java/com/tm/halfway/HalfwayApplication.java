@@ -10,8 +10,17 @@ import com.squareup.leakcanary.LeakCanary;
  */
 
 public class HalfwayApplication extends Application {
+    private static HalfwayApplication sInstance;
+
+    public static HalfwayApplication getInstance() {
+        return sInstance;
+    }
+
     @Override public void onCreate() {
         super.onCreate();
+
+        sInstance = this;
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.

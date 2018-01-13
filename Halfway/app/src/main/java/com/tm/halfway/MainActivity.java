@@ -79,17 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Close HalfWay app?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finishAffinity();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            //do nothing
-                        }
+                    .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> finishAffinity())
+                    .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {
+                        //do nothing
                     })
                     .show();
         } else {

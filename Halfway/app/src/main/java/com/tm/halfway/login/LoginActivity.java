@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.tm.halfway.MainActivity;
 import com.tm.halfway.R;
+import com.tm.halfway.utils.Constants;
+import com.tm.halfway.utils.SessionUtils;
 
 /**
  * Last edit by tudor.maier on 28/11/2017.
@@ -54,14 +56,19 @@ public class LoginActivity extends AppCompatActivity {
                             super.onPostExecute(token);
 
                             if (token != null) {
+                                SessionUtils.setToken(token);
+                                SessionUtils.setUserName(username);
+
                                 SharedPreferences sharedPref = getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("Authorization", token);
                                 editor.putString("Owner", username);
                                 if("admin".equals(username)){
                                     editor.putString("Role", "ADMIN");
+                                    SessionUtils.setUserType(Constants.UserTypes.ADMIN);
                                 } else {
                                     editor.putString("Role", "QUEST");
+                                    SessionUtils.setUserType(Constants.UserTypes.QUEST);
                                 }
                                 editor.apply();
 
