@@ -13,4 +13,12 @@ public class Constants {
         public static final int ADMIN = 1;
         public static final int QUEST = 2;
     }
+
+    public class SortCriteria {
+        public static final int CREATED = 0;
+        public static final int UPDATED = 1;
+        public static final int ENDING = 2;
+        public static final int COST_ASC = 3;
+        public static final int COST_DESC = 4;
+    }
 }

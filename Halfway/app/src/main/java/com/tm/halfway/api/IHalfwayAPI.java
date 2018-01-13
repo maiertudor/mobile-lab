@@ -1,6 +1,7 @@
 package com.tm.halfway.api;
 
-import com.tm.halfway.model.BaseResponse;
+import com.tm.halfway.model.GetJobResponse;
+import com.tm.halfway.model.Job;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,5 +13,5 @@ import retrofit2.http.GET;
 public interface IHalfwayAPI {
 
     @GET("v1/jobs")
-    Call<BaseResponse<Object>> getJobs();
+    Call<GetJobResponse> getJobs();
 }

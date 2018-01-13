@@ -3,8 +3,6 @@ package com.tm.halfway.joblist;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.DataSetObserver;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,19 +15,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.tm.halfway.R;
 import com.tm.halfway.api.ApiHelper;
 import com.tm.halfway.create_job.CreateJobFragment;
 import com.tm.halfway.jobdetails.JobDetailsFragment;
-import com.tm.halfway.model.BaseResponse;
+import com.tm.halfway.model.GetJobResponse;
 import com.tm.halfway.model.Job;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.tm.halfway.utils.ConvertionUtils;
+import com.tm.halfway.utils.JobsOrderEnum;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -52,6 +50,9 @@ public class JobsFragment extends Fragment {
     private static final String TAG = JobsFragment.class.getSimpleName();
     private List<Job> jobsList;
     private JobHelper mDatabaseHelper;
+    private Spinner mOrderSpinner;
+    private JobsOrderEnum mOrderEnum;
+    private JobListAdapter jobListAdapter;
 
     @Nullable
     @Override
@@ -60,14 +61,17 @@ public class JobsFragment extends Fragment {
 
         jobsList = new ArrayList<>();
         mDatabaseHelper = new JobHelper(getContext());
+        mOrderEnum = JobsOrderEnum.CREATED;
+
 //        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 //        mDatabaseHelper.onUpgrade(db,0,0);
 
         final FragmentManager fragmentManager = getFragmentManager();
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        mOrderSpinner = (Spinner) view.findViewById(R.id.jf_s_sort_spinner);
         final ListView jobsListView = (ListView) view.findViewById(R.id.jobsListId);
-        final JobListAdapter jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
+        jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
 
         jobsListView.setAdapter(jobListAdapter);
         View headerView = inflater.inflate(R.layout.jobs_header_view, container, false);
@@ -81,7 +85,7 @@ public class JobsFragment extends Fragment {
         if (!hasInternetConnection()) {
             populateListViewOffline(jobListAdapter);
         } else {
-            populateListViewOnline(token, jobListAdapter);
+            populateListViewOnline(mOrderEnum, jobListAdapter);
         }
 
         jobsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,7 +109,7 @@ public class JobsFragment extends Fragment {
 
         String role = sharedPref.getString("Role", "null");
 
-        if("QUEST".equals(role)) {
+        if ("QUEST".equals(role)) {
             addButton.setAlpha(0);
         } else {
             addButton.setAlpha(1);
@@ -122,76 +126,26 @@ public class JobsFragment extends Fragment {
             }
         });
 
+        addItemsOnSpinner();
+
         return view;
     }
 
-    private void populateListViewOnline(String token, final JobListAdapter jobListAdapter) {
-        ApiHelper.getApi().getJobs().enqueue(new Callback<BaseResponse<Object>>() {
+    private void populateListViewOnline(JobsOrderEnum mOrderEnum, final JobListAdapter jobListAdapter) {
+        ApiHelper.getApi().getJobs().enqueue(new Callback<GetJobResponse>() {
             @Override
-            public void onResponse(Call<BaseResponse<Object>> call, Response<BaseResponse<Object>> response) {
+            public void onResponse(Call<GetJobResponse> call, Response<GetJobResponse> response) {
                 Log.d(TAG, "onResponse: " + response);
+                ConvertionUtils.setDataToJobsResponse(response.body());
+
+                jobListAdapter.setItemsList(response.body().getJobs());
             }
 
             @Override
-            public void onFailure(Call<BaseResponse<Object>> call, Throwable t) {
+            public void onFailure(Call<GetJobResponse> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
             }
         });
-
-        new JobListAsync() {
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                try {
-                    List<Job> tmpList = new ArrayList<>();
-                    JSONObject jsonObject = new JSONObject(s);
-                    JSONArray jsonArray = jsonObject.getJSONArray("jobs");
-
-//                    DateFormat df = DateFormat.getDateTimeInstance();
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jobJSON = jsonArray.getJSONObject(i);
-                        Job job = new Job();
-                        job.setId(jobJSON.getString("id"));
-                        job.setTitle(jobJSON.getString("title"));
-                        job.setDescription(jobJSON.getString("description"));
-                        Date created_at = df.parse(jobJSON.getString("createdAt"));
-                        job.setCreated_at(created_at);
-                        Date updated_at = df.parse(jobJSON.getString("updatedAt"));
-                        job.setUpdated_at(updated_at);
-                        Date ends_at = df.parse(jobJSON.getString("endsAt"));
-                        job.setEnds_at(ends_at);
-                        job.setCost(Float.valueOf(jobJSON.getString("cost")));
-                        job.setOwner(jobJSON.getString("owner"));
-                        job.setCategory(jobJSON.getString("category"));
-                        job.setLocation(jobJSON.getString("location"));
-
-                        tmpList.add(job);
-                    }
-
-                    if (jobsList.size() != tmpList.size()) {
-                        jobsList.clear();
-                        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-                        mDatabaseHelper.onUpgrade(db, 0 ,0);
-                        for (Job job : tmpList) {
-                            if (job != null) {
-                                mDatabaseHelper.addJob(job);
-                                jobsList.add(job);
-                            }
-                        }
-
-                        jobListAdapter.notifyDataSetChanged();
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    Log.e("JobsFragment", e.getMessage());
-                }
-            }
-        }.execute(token);
     }
 
     private boolean hasInternetConnection() {
@@ -248,4 +202,29 @@ public class JobsFragment extends Fragment {
         return new Job(id, title, description, created_at, updated_at, ends_at, cost, owner, category, location);
     }
 
+    public void addItemsOnSpinner() {
+        ArrayAdapter sortAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_items, R.layout.spinner_item);
+        sortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        mOrderSpinner.setAdapter(sortAdapter);
+
+        mOrderSpinner.setSelection(0, false);
+        mOrderSpinner.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+    }
+
+    public class CustomOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            Log.d(TAG, "onItemSelected: " + pos);
+
+            mOrderEnum = JobsOrderEnum.get(pos);
+
+            populateListViewOnline(mOrderEnum, jobListAdapter);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+
+        }
+    }
 }

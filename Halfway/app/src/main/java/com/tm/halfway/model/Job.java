@@ -1,8 +1,10 @@
 package com.tm.halfway.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -11,16 +13,30 @@ import java.util.Date;
  */
 
 public class Job implements Serializable {
+    @SerializedName("id")
     private String id;
+    @SerializedName("title")
     private String title;
+    @SerializedName("description")
     private String description;
+    @SerializedName("createdAt")
+    private String createdAtString;
+    @SerializedName("updatedAt")
+    private String updatedAtString;
+    @SerializedName("endsAt")
+    private String endsAtString;
+    @SerializedName("cost")
+    private Float cost;
+    @SerializedName("owner")
+    private String owner;
+    @SerializedName("category")
+    private String category;
+    @SerializedName("location")
+    private String location;
+
     private Date created_at;
     private Date updated_at;
     private Date ends_at;
-    private Float cost;
-    private String owner;
-    private String category;
-    private String location;
 
     public Job(String id, String title, String description, Date created_at, Date updated_at, Date ends_at, Float cost, String owner, String category, String location) {
         this.id = id;
@@ -58,6 +74,30 @@ public class Job implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCreatedAtString() {
+        return createdAtString;
+    }
+
+    public void setCreatedAtString(String createdAtString) {
+        this.createdAtString = createdAtString;
+    }
+
+    public String getUpdatedAtString() {
+        return updatedAtString;
+    }
+
+    public void setUpdatedAtString(String updatedAtString) {
+        this.updatedAtString = updatedAtString;
+    }
+
+    public String getEndsAtString() {
+        return endsAtString;
+    }
+
+    public void setEndsAtString(String endsAtString) {
+        this.endsAtString = endsAtString;
     }
 
     public Date getCreated_at() {

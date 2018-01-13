@@ -46,7 +46,17 @@ public class JobListAdapter extends ArrayAdapter<Job> {
     }
 
     public void setItemsList(List<Job> itemsList) {
-        this.itemsList = itemsList;
+        clear();
+
+        if (itemsList != null){
+
+            for (Job object : itemsList) {
+
+                insert(object, getCount());
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
     @NonNull

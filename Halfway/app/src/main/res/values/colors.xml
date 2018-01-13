@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="listViewCard">#ffffff</color>
     <color name="warning">#cc2b2d</color>
+    <color name="lightLightLightGray">#F2F2F2</color>
+    <color name="simpleBlack">#443A3A</color>
+    <color name="lightGray">#ACACAC</color>
 </resources>
