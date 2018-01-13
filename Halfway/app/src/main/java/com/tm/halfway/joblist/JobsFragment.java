@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.tm.halfway.R;
@@ -59,14 +60,18 @@ public class JobsFragment extends Fragment {
             Log.d(TAG, "onResponse: " + response);
             ConvertionUtils.setDataToJobsResponse(response.body());
 
+            mLoadingPB.setVisibility(View.GONE);
+
             jobListAdapter.setItemsList(response.body().getJobs());
         }
 
         @Override
         public void onFailure(Call<GetJobResponse> call, Throwable t) {
             Log.d(TAG, "onFailure: " + t.getMessage());
+            mLoadingPB.setVisibility(View.VISIBLE);
         }
     };
+    private ProgressBar mLoadingPB;
 
     @Nullable
     @Override
@@ -84,6 +89,7 @@ public class JobsFragment extends Fragment {
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         mOrderSpinner = (Spinner) view.findViewById(R.id.jf_s_sort_spinner);
+        mLoadingPB = (ProgressBar) view.findViewById(R.id.jf_pb_loading);
         final ListView jobsListView = (ListView) view.findViewById(R.id.jobsListId);
         jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
 
@@ -146,6 +152,8 @@ public class JobsFragment extends Fragment {
     }
 
     private void populateListViewOnline(JobsOrderEnum orderEnum, final JobListAdapter jobListAdapter) {
+        mLoadingPB.setVisibility(View.VISIBLE);
+
         switch (orderEnum) {
             case CREATED:
                 ApiHelper.getApi().getJobsCreated().enqueue(mGetJobsCallbackHandler);
