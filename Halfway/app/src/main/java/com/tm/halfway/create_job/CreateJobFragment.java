@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.tm.halfway.HalfwayApplication;
 import com.tm.halfway.R;
 import com.tm.halfway.jobdetails.JobAddAsync;
 import com.tm.halfway.joblist.JobHelper;
@@ -74,7 +75,9 @@ public class CreateJobFragment extends Fragment {
                     newJob.setEnds_at(result);
                 } catch (ParseException e) {
                     e.printStackTrace();
+                    newJob.setEnds_at(Calendar.getInstance().getTime());
                 }
+
                 newJob.setDescription(String.valueOf(createJobDescription.getText()));
                 newJob.setOwner(String.valueOf(createJobEmployer.getText()));
 
@@ -88,17 +91,16 @@ public class CreateJobFragment extends Fragment {
                     protected void onPostExecute(String s) {
                         super.onPostExecute(s);
                         if ("success".equals(s)) {
-                            mDatabaseHelper.addJob(newJob);
+                            Toast.makeText(HalfwayApplication.getInstance(), "Job posted successfully", Toast.LENGTH_SHORT).show();
                         } else if ("noconnection".equals(s)) {
-                            mDatabaseHelper.addJob(newJob);
                         } else {
+                            Toast.makeText(HalfwayApplication.getInstance(), "Could not post job", Toast.LENGTH_SHORT).show();
                             Log.e(TAG, "Error saving job");
                         }
+
+                        getFragmentManager().popBackStackImmediate();
                     }
                 }.execute(token, newJob);
-                Toast.makeText(getContext(), "Saving new job details...", Toast.LENGTH_SHORT).show();
-
-                getFragmentManager().popBackStackImmediate();
             }
         });
 

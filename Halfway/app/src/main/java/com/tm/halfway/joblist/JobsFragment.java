@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.tm.halfway.R;
 import com.tm.halfway.api.ApiHelper;
@@ -32,6 +33,7 @@ import com.tm.halfway.model.GetJobResponse;
 import com.tm.halfway.model.Job;
 import com.tm.halfway.utils.ConvertionUtils;
 import com.tm.halfway.utils.JobsOrderEnum;
+import com.tm.halfway.utils.SessionUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -66,6 +68,8 @@ public class JobsFragment extends Fragment {
             mLoadingPB.setVisibility(View.GONE);
 
             jobListAdapter.setItemsList(response.body().getJobs());
+
+            showEmptyView(jobListAdapter.isEmpty());
         }
 
         @Override
@@ -75,6 +79,8 @@ public class JobsFragment extends Fragment {
         }
     };
     private ProgressBar mLoadingPB;
+    private View mSpinnerContainer;
+    private TextView mEmptyTV;
 
     @Nullable
     @Override
@@ -92,6 +98,8 @@ public class JobsFragment extends Fragment {
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         mOrderSpinner = (Spinner) view.findViewById(R.id.jf_s_sort_spinner);
+        mEmptyTV = (TextView) view.findViewById(R.id.jf_tv_empty_view);
+        mSpinnerContainer = view.findViewById(R.id.jf_ll_order_by_layout);
         mLoadingPB = (ProgressBar) view.findViewById(R.id.jf_pb_loading);
         final ListView jobsListView = (ListView) view.findViewById(R.id.jobsListId);
         jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
@@ -101,6 +109,12 @@ public class JobsFragment extends Fragment {
             public void success(ApplicationUserResponse response) {
                 Log.d(TAG, "success: " + response);
                 ArrayList<String> appliedForJobIds = new ArrayList<String>();
+
+                mLoadingPB.setVisibility(View.GONE);
+                if (response.getApplications() == null) {
+                    return;
+                }
+
                 for (Application application : response.getApplications()) {
                     appliedForJobIds.add(application.getJob().getId());
                 }
@@ -150,10 +164,8 @@ public class JobsFragment extends Fragment {
 
         String role = sharedPref.getString("Role", "null");
 
-        if ("PROVIDER".equals(role)) {
-            addButton.setAlpha(0);
-        } else {
-            addButton.setAlpha(1);
+        if (!SessionUtils.isUserClient()) {
+            headerView.setVisibility(View.GONE);
         }
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -167,30 +179,47 @@ public class JobsFragment extends Fragment {
             }
         });
 
-        addItemsOnSpinner();
+        configureSpinner();
 
         return view;
+    }
+
+    private void configureSpinner() {
+        if (SessionUtils.isUserClient()) {
+            mSpinnerContainer.setVisibility(View.GONE);
+        } else {
+            addItemsOnSpinner();
+        }
+    }
+
+    private void showEmptyView(boolean show) {
+        int visibility = show ? View.VISIBLE : View.GONE;
+        mEmptyTV.setVisibility(visibility);
     }
 
     private void populateListViewOnline(JobsOrderEnum orderEnum, final JobListAdapter jobListAdapter) {
         mLoadingPB.setVisibility(View.VISIBLE);
 
-        switch (orderEnum) {
-            case CREATED:
-                ApiHelper.getApi().getJobsCreated().enqueue(mGetJobsCallbackHandler);
-                break;
-            case UPDATED:
-                ApiHelper.getApi().getJobsUpdated().enqueue(mGetJobsCallbackHandler);
-                break;
-            case ENDING:
-                ApiHelper.getApi().getJobsEnded().enqueue(mGetJobsCallbackHandler);
-                break;
-            case COST_ASC:
-                ApiHelper.getApi().getJobsCostAscending().enqueue(mGetJobsCallbackHandler);
-                break;
-            case COST_DESC:
-                ApiHelper.getApi().getJobsCostDescending().enqueue(mGetJobsCallbackHandler);
-                break;
+        if (!SessionUtils.isUserClient()) {
+            switch (orderEnum) {
+                case CREATED:
+                    ApiHelper.getApi().getJobsCreated().enqueue(mGetJobsCallbackHandler);
+                    break;
+                case UPDATED:
+                    ApiHelper.getApi().getJobsUpdated().enqueue(mGetJobsCallbackHandler);
+                    break;
+                case ENDING:
+                    ApiHelper.getApi().getJobsEnded().enqueue(mGetJobsCallbackHandler);
+                    break;
+                case COST_ASC:
+                    ApiHelper.getApi().getJobsCostAscending().enqueue(mGetJobsCallbackHandler);
+                    break;
+                case COST_DESC:
+                    ApiHelper.getApi().getJobsCostDescending().enqueue(mGetJobsCallbackHandler);
+                    break;
+            }
+        } else {
+            ApiHelper.getApi().getClientJobs().enqueue(mGetJobsCallbackHandler);
         }
     }
 

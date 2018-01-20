@@ -63,10 +63,8 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("Owner", username);
                                 if ("admin".equals(username)) {
                                     editor.putString("Role", "CLIENT");
-                                    SessionUtils.setUserType(Constants.UserTypes.CLIENT);
                                 } else {
                                     editor.putString("Role", "PROVIDER");
-                                    SessionUtils.setUserType(Constants.UserTypes.PROVIDER);
                                 }
                                 editor.apply();
 

@@ -1,6 +1,7 @@
 package com.tm.halfway.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.tm.halfway.utils.ConvertionUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -34,7 +35,7 @@ public class Job implements Serializable {
     private Date created_at;
     private Date updated_at;
     private Date ends_at;
-    private boolean applied = true;
+    private boolean applied;
 
     public boolean isApplied() {
         return applied;
@@ -62,7 +63,7 @@ public class Job implements Serializable {
         this.created_at = date;
         this.updated_at = date;
         this.cost = 10F;
-        this.category = "Relatii publice";
+        this.category = "Gardening";
         this.location = "Cluj-Napoca";
     }
 
@@ -112,6 +113,7 @@ public class Job implements Serializable {
 
     public void setCreated_at(Date created_at) {
         this.created_at = created_at;
+        this.createdAtString = ConvertionUtils.getStringForDate(created_at);
     }
 
     public Date getUpdated_at() {
@@ -120,6 +122,7 @@ public class Job implements Serializable {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+        this.updatedAtString = ConvertionUtils.getStringForDate(updated_at);
     }
 
     public Date getEnds_at() {
@@ -128,6 +131,7 @@ public class Job implements Serializable {
 
     public void setEnds_at(Date ends_at) {
         this.ends_at = ends_at;
+        this.endsAtString = ConvertionUtils.getStringForDate(ends_at);
     }
 
     public Float getCost() {

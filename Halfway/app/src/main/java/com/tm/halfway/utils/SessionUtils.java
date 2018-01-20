@@ -46,4 +46,12 @@ public class SessionUtils {
     public static void setUserType(int admin) {
         getSessionPreferences().edit().putInt(USER_TYPE, admin).apply();
     }
+
+    public static int getUserType() {
+        return getSessionPreferences().getInt(USER_TYPE, Constants.UserTypes.CLIENT);
+    }
+
+    public static boolean isUserClient() {
+        return getUserType() == Constants.UserTypes.CLIENT;
+    }
 }

@@ -33,4 +33,13 @@ public class ConvertionUtils {
 
         return date;
     }
+
+    public static String getStringForDate(Date date) {
+        String dateString = null;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        dateString = df.format(date);
+
+        return dateString;
+    }
 }

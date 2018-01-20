@@ -32,4 +32,7 @@ public interface IHalfwayAPI {
     Call<ApplicationUserResponse> getApplicationsForUser();
     @POST("v1//apply/job/{jobId}")
     Call<String> applyToJob(@Path("jobId") String jobId);
+
+    @GET("v1/jobs/user")
+    Call<GetJobResponse> getClientJobs();
 }

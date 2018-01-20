@@ -50,6 +50,17 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/jf_tv_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:text="@string/client_jobs_empty_message"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
     <ProgressBar
         android:id="@+id/jf_pb_loading"
         android:layout_width="wrap_content"
