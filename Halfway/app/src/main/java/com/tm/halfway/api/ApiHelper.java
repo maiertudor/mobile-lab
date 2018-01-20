@@ -89,6 +89,7 @@ public class ApiHelper {
 
     private static Gson initGson() {
         return new GsonBuilder()
+                .setLenient()
                 .create();
     }
 }

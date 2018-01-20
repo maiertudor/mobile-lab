@@ -25,6 +25,9 @@ import com.tm.halfway.R;
 import com.tm.halfway.api.ApiHelper;
 import com.tm.halfway.create_job.CreateJobFragment;
 import com.tm.halfway.jobdetails.JobDetailsFragment;
+import com.tm.halfway.model.ApiCallback;
+import com.tm.halfway.model.Application;
+import com.tm.halfway.model.ApplicationUserResponse;
 import com.tm.halfway.model.GetJobResponse;
 import com.tm.halfway.model.Job;
 import com.tm.halfway.utils.ConvertionUtils;
@@ -92,6 +95,24 @@ public class JobsFragment extends Fragment {
         mLoadingPB = (ProgressBar) view.findViewById(R.id.jf_pb_loading);
         final ListView jobsListView = (ListView) view.findViewById(R.id.jobsListId);
         jobListAdapter = new JobListAdapter(getContext(), R.layout.jobs_item_list, jobsList);
+
+        ApiHelper.getApi().getApplicationsForUser().enqueue(new ApiCallback<ApplicationUserResponse>() {
+            @Override
+            public void success(ApplicationUserResponse response) {
+                Log.d(TAG, "success: " + response);
+                ArrayList<String> appliedForJobIds = new ArrayList<String>();
+                for (Application application : response.getApplications()) {
+                    appliedForJobIds.add(application.getJob().getId());
+                }
+
+                jobListAdapter.setJobApplications(appliedForJobIds);
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                Log.e(TAG, "failure: ", exception);
+            }
+        });
 
         jobsListView.setAdapter(jobListAdapter);
         View headerView = inflater.inflate(R.layout.jobs_header_view, container, false);

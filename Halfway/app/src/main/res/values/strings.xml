@@ -5,6 +5,7 @@
     <string name="register_button_text">Register here</string>
     <string name="delete_job">Delete job</string>
     <string name="order_by">Order by:</string>
+    <string name="apply">Apply</string>
 
     <string-array name="spinner_items">
         <item>Created first</item>

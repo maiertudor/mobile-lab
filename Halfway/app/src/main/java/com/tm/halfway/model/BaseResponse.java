@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class BaseResponse {
     @SerializedName("success")
-    private boolean success;
+    private boolean success = true;
     @SerializedName("error")
     private String error;
     @SerializedName("message")

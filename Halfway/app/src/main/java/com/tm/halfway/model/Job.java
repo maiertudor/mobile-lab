@@ -3,9 +3,6 @@ package com.tm.halfway.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -37,6 +34,15 @@ public class Job implements Serializable {
     private Date created_at;
     private Date updated_at;
     private Date ends_at;
+    private boolean applied = true;
+
+    public boolean isApplied() {
+        return applied;
+    }
+
+    public void setApplied(boolean applied) {
+        this.applied = applied;
+    }
 
     public Job(String id, String title, String description, Date created_at, Date updated_at, Date ends_at, Float cost, String owner, String category, String location) {
         this.id = id;

@@ -20,6 +20,7 @@ import com.tm.halfway.model.Job;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,9 +29,10 @@ import java.util.List;
 
 public class JobListAdapter extends ArrayAdapter<Job> {
     private static final String TAG = "JobListAdapter";
-    private static List<Job> itemsList;
+    private List<Job> itemsList;
     private Context context;
     private int resLayout;
+    private ArrayList<String> mAppliedForJobIds;
 
     public JobListAdapter(Context context, int resource, List<Job> objects) {
         super(context, resource, objects);
@@ -46,6 +48,9 @@ public class JobListAdapter extends ArrayAdapter<Job> {
 
     public void setItemsList(List<Job> itemsList) {
         clear();
+
+        this.itemsList = itemsList;
+        setApplicationsToJobs(itemsList, mAppliedForJobIds);
 
         if (itemsList != null) {
 
@@ -133,5 +138,24 @@ public class JobListAdapter extends ArrayAdapter<Job> {
         });
 
         return view;
+    }
+
+    public void setJobApplications(ArrayList<String> appliedForJobIds) {
+        mAppliedForJobIds = appliedForJobIds;
+        setApplicationsToJobs(itemsList, appliedForJobIds);
+    }
+
+    private void setApplicationsToJobs(List<Job> itemsList, ArrayList<String> appliedForJobIds) {
+        if (itemsList == null || appliedForJobIds == null)
+            return;
+
+        for (Job job : itemsList) {
+            for (String appliedForJobId : appliedForJobIds) {
+                if (job.getId().equals(appliedForJobId))
+                    job.setApplied(true);
+            }
+
+            job.setApplied(false);
+        }
     }
 }
