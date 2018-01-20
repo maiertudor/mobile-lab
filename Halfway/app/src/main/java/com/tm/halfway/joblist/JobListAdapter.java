@@ -17,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.tm.halfway.R;
 import com.tm.halfway.jobdetails.JobDeleteAsync;
 import com.tm.halfway.model.Job;
+import com.tm.halfway.utils.SessionUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -89,22 +90,15 @@ public class JobListAdapter extends ArrayAdapter<Job> {
         SharedPreferences sharedPref = context.getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
 
-        if ("PROVIDER".equals(role)) {
-            removeJob.setAlpha(0);
+        if (!SessionUtils.isUserClient()) {
+            removeJob.setVisibility(View.GONE);
         } else {
-            removeJob.setAlpha(1);
+            removeJob.setVisibility(View.VISIBLE);
         }
 
         removeJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                fm.send(new RemoteMessage.Builder("jobs@gcm.googleapis.com")
-                        .setMessageId(Integer.toString(213123))
-                        .addData("my_message", "Hello World")
-                        .addData("my_action", "SAY_HELLO")
-                        .build());
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("Are you sure you want to delete job: " + currentJob.getTitle())
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -123,6 +117,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
                                         } else {
                                             mDatabaseHelper.deleteJob(currentJob.getId());
                                             itemsList.remove(currentJob);
+                                            remove(currentJob);
                                             notifyDataSetChanged();
                                         }
                                     }
