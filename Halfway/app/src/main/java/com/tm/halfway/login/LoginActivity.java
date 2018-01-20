@@ -62,11 +62,11 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("Authorization", token);
                                 editor.putString("Owner", username);
                                 if ("admin".equals(username)) {
-                                    editor.putString("Role", "ADMIN");
-                                    SessionUtils.setUserType(Constants.UserTypes.ADMIN);
+                                    editor.putString("Role", "CLIENT");
+                                    SessionUtils.setUserType(Constants.UserTypes.CLIENT);
                                 } else {
-                                    editor.putString("Role", "QUEST");
-                                    SessionUtils.setUserType(Constants.UserTypes.QUEST);
+                                    editor.putString("Role", "PROVIDER");
+                                    SessionUtils.setUserType(Constants.UserTypes.PROVIDER);
                                 }
                                 editor.apply();
 
@@ -97,17 +97,5 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
-        Button registerButton = (Button) findViewById(R.id.register_buttonID);
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sharedPref = getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
-                String token = sharedPref.getString("Authorization", "null");
-                Log.d("LoginFragment", token);
-            }
-
-        });
     }
-
 }

@@ -150,7 +150,7 @@ public class JobsFragment extends Fragment {
 
         String role = sharedPref.getString("Role", "null");
 
-        if ("QUEST".equals(role)) {
+        if ("PROVIDER".equals(role)) {
             addButton.setAlpha(0);
         } else {
             addButton.setAlpha(1);

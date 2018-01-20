@@ -75,31 +75,5 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/register_info"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/register_buttonID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/colorPrimaryDark"
-            android:text="@string/register_button_text"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
-    </LinearLayout>
-
 
 </LinearLayout>

@@ -46,6 +46,8 @@ public class JobDetailsFragment extends Fragment {
 
     @BindView(R.id.jdf_bt_apply)
     Button mApplyBT;
+    @BindView(R.id.jdf_tv_you_applied)
+    TextView mYouAppliedTV;
 
     public static void openGmail(Activity activity, String[] email, String subject, String content) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -88,9 +90,7 @@ public class JobDetailsFragment extends Fragment {
         final TextView editJobDate = (TextView) view.findViewById(R.id.editJobDate);
         final TextView editJobEmployer = (TextView) view.findViewById(R.id.editJobEmployer);
 
-        if (currentJob.isApplied()) {
-            mApplyBT.setVisibility(View.GONE);
-        }
+        updateUIForAppliedStatus();
 
         editJobName.setText(currentJob.getTitle());
         editJobDescription.setText(currentJob.getDescription());
@@ -101,12 +101,11 @@ public class JobDetailsFragment extends Fragment {
 
         SharedPreferences sharedPref = getContext().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
+    }
 
-//        if("QUEST".equals(role)) {
-//            saveButton.setAlpha(0);
-//        } else {
-//            saveButton.setAlpha(1);
-//        }
+    private void updateUIForAppliedStatus() {
+        mApplyBT.setVisibility(currentJob.isApplied() ? View.GONE : View.VISIBLE);
+        mYouAppliedTV.setVisibility(!currentJob.isApplied() ? View.GONE : View.VISIBLE);
     }
 
     private void refreshCurrentJob(TextView editJobName, TextView editJobDate, TextView editJobDescription, TextView editJobEmployer) {
@@ -130,6 +129,7 @@ public class JobDetailsFragment extends Fragment {
             public void onResponse(Call<String> call, Response<String> response) {
                 Toast.makeText(JobDetailsFragment.this.getContext(), "Applied for job successfully", Toast.LENGTH_SHORT).show();
                 currentJob.setApplied(true);
+                updateUIForAppliedStatus();
             }
 
             @Override

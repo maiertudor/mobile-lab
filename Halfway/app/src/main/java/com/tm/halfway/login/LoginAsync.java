@@ -1,7 +1,13 @@
 package com.tm.halfway.login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.tm.halfway.HalfwayApplication;
+import com.tm.halfway.utils.Constants;
+import com.tm.halfway.utils.SessionUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -48,6 +54,13 @@ public class LoginAsync extends AsyncTask<Object, Object, String> {
                 for (Header header : headers) {
                     if ("Authorization".equals(header.getName())) {
                         token = header.getValue();
+                    } else if (Constants.ROLE.equals(header.getName())) {
+                        SharedPreferences sharedPref = HalfwayApplication.getInstance().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("Role", Constants.Roles.PROVIDER.equals(header.getValue()) ? "PROVIDER" : "CLIENT");
+                        editor.apply();
+
+                        SessionUtils.setUserType(Constants.Roles.PROVIDER.equals(header.getValue()) ? Constants.UserTypes.PROVIDER : Constants.UserTypes.CLIENT);
                     }
                 }
                 Log.d("LoginAsync", token);

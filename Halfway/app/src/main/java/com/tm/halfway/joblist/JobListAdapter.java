@@ -89,7 +89,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
         SharedPreferences sharedPref = context.getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
 
-        if ("QUEST".equals(role)) {
+        if ("PROVIDER".equals(role)) {
             removeJob.setAlpha(0);
         } else {
             removeJob.setAlpha(1);
@@ -150,12 +150,13 @@ public class JobListAdapter extends ArrayAdapter<Job> {
             return;
 
         for (Job job : itemsList) {
+            boolean foundId = false;
             for (String appliedForJobId : appliedForJobIds) {
                 if (job.getId().equals(appliedForJobId))
-                    job.setApplied(true);
+                    foundId = true;
             }
 
-            job.setApplied(false);
+            job.setApplied(foundId);
         }
     }
 }

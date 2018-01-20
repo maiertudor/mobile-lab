@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.tm.halfway.joblist.JobsFragment;
 import com.tm.halfway.login.LoginActivity;
+import com.tm.halfway.utils.SessionUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.logout_button) {
             SharedPreferences sharedPref = getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
             sharedPref.edit().clear().apply();
+            SessionUtils.clearSession();
 
             Intent logoutIntent = new Intent(this, LoginActivity.class);
             startActivity(logoutIntent);
