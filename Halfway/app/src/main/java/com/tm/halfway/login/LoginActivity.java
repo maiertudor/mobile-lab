@@ -9,8 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPref = getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
-        if (!"EMPTY".equals(sharedPref.getString("Authorization", "EMPTY"))){
+        if (!"EMPTY".equals(sharedPref.getString("Authorization", "EMPTY"))) {
             Intent loginIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(loginIntent);
         }
@@ -63,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("Authorization", token);
                                 editor.putString("Owner", username);
-                                if("admin".equals(username)){
+                                if ("admin".equals(username)) {
                                     editor.putString("Role", "ADMIN");
                                     SessionUtils.setUserType(Constants.UserTypes.ADMIN);
                                 } else {

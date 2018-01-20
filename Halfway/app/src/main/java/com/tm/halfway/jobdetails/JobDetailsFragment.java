@@ -17,7 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
@@ -77,66 +77,17 @@ public class JobDetailsFragment extends Fragment {
         if (bundle != null) {
             currentJob = (Job) bundle.getSerializable("JOB");
         }
-        initGraph(view);
         return view;
-    }
-
-    private void initGraph(View view) {
-        GraphView graph = (GraphView) view.findViewById(R.id.graph);
-
-        JobHelper mDatabaseHelper = new JobHelper(getContext());
-        Cursor data = mDatabaseHelper.getData();
-
-        Map<String, Integer> nameMap = new HashMap<>();
-        while (data.moveToNext()) {
-            String name = data.getString(1);
-            if (nameMap.containsKey(name)) {
-                int value = nameMap.get(name);
-                value++;
-                nameMap.put(name, value);
-            } else {
-                nameMap.put(name, 1);
-            }
-        }
-        int i = 0;
-        String[] horizontalLabels = new String[nameMap.keySet().size()];
-        DataPoint[] dataPoints = new DataPoint[nameMap.keySet().size()];
-        for (String name : nameMap.keySet()) {
-            dataPoints[i] = new DataPoint(i, nameMap.get(name).doubleValue());
-            horizontalLabels[i] = name;
-            i++;
-        }
-
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(horizontalLabels);
-        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
-
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
-        graph.addSeries(series);
-
-        // styling
-        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-            @Override
-            public int get(DataPoint data) {
-                return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
-            }
-        });
-
-        series.setSpacing(50);
-
-        // draw values on top
-        series.setDrawValuesOnTop(true);
-        series.setValuesOnTopColor(Color.RED);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final EditText editJobName = (EditText) view.findViewById(R.id.editJobName);
-        final EditText editJobDescription = (EditText) view.findViewById(R.id.editJobDescription);
-        final EditText editJobDate = (EditText) view.findViewById(R.id.editJobDate);
-        final EditText editJobEmployer = (EditText) view.findViewById(R.id.editJobEmployer);
+        final TextView editJobName = (TextView) view.findViewById(R.id.editJobName);
+        final TextView editJobDescription = (TextView) view.findViewById(R.id.editJobDescription);
+        final TextView editJobDate = (TextView) view.findViewById(R.id.editJobDate);
+        final TextView editJobEmployer = (TextView) view.findViewById(R.id.editJobEmployer);
 
         editJobName.setText(currentJob.getTitle());
         editJobDescription.setText(currentJob.getDescription());
@@ -145,58 +96,17 @@ public class JobDetailsFragment extends Fragment {
         editJobDate.setText(result);
         editJobEmployer.setText(currentJob.getOwner());
 
-        Button saveButton = (Button) view.findViewById(R.id.saveButton);
-
         SharedPreferences sharedPref = getContext().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
 
-        if("QUEST".equals(role)) {
-            saveButton.setAlpha(0);
-        } else {
-            saveButton.setAlpha(1);
-        }
-
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                JobHelper mDatabaseHelper = new JobHelper(getContext());
-
-//                refreshCurrentJob(editJobName, editJobDate, editJobDescription, editJobEmployer);
-//
-//                if (mDatabaseHelper.updateJob(currentJob) == 1) {
-//                    Toast.makeText(getContext(), "Saved new job details!", Toast.LENGTH_SHORT).show();
-//                    getFragmentManager().popBackStackImmediate();
-//                } else {
-//                    Toast.makeText(getContext(), "Job couldn't be saved!", Toast.LENGTH_SHORT).show();
-//                }
-
-                saveJob(currentJob.getId(), String.valueOf(editJobName.getText()), String.valueOf(editJobDescription.getText()), String.valueOf(editJobDate.getText()), String.valueOf(editJobEmployer.getText()));
-                Toast.makeText(getContext(), "Updating job...", Toast.LENGTH_SHORT).show();
-                getFragmentManager().popBackStackImmediate();
-
-            }
-        });
-
-        EditText feebackEditText = (EditText) view.findViewById(R.id.feebackEditText);
-        final String feedbackText = feebackEditText.getText().toString();
-
-        Button sendFeedbackButton = (Button) view.findViewById(R.id.sendFeedbackButton);
-        sendFeedbackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGmail(getActivity(), new String[]{"johndoe@gmail.com"}, "Feedback from HalfWay", feedbackText);
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setType("text/plain");
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback from HalfWay App");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, feedbackText);
-                startActivity(emailIntent);
-            }
-        });
-
-
+//        if("QUEST".equals(role)) {
+//            saveButton.setAlpha(0);
+//        } else {
+//            saveButton.setAlpha(1);
+//        }
     }
 
-    private void refreshCurrentJob(EditText editJobName, EditText editJobDate, EditText editJobDescription, EditText editJobEmployer) {
+    private void refreshCurrentJob(TextView editJobName, TextView editJobDate, TextView editJobDescription, TextView editJobEmployer) {
         currentJob.setTitle(String.valueOf(editJobName.getText()));
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         Date result;
@@ -209,39 +119,4 @@ public class JobDetailsFragment extends Fragment {
         currentJob.setDescription(String.valueOf(editJobDescription.getText()));
         currentJob.setOwner(String.valueOf(editJobEmployer.getText()));
     }
-
-    private void saveJob(String id, String title, String description, String date, String owner) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-        Date result = null;
-        try {
-            result = df.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        currentJob.setTitle(title);
-        currentJob.setDescription(description);
-        currentJob.setEnds_at(result);
-        currentJob.setOwner(owner);
-
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
-        String token = sharedPref.getString("Authorization", "null");
-
-        final JobHelper mDatabaseHelper = new JobHelper(getContext());
-        new JobUpdateAsync(){
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if ("success".equals(s)) {
-                    mDatabaseHelper.updateJob(currentJob);
-                } else if ("noconnection".equals(s)) {
-                    mDatabaseHelper.updateJob(currentJob);
-                } else {
-                    Log.e(TAG, "Error saving job");
-                }
-            }
-        }.execute(token, id, currentJob);
-    }
-
-
 }

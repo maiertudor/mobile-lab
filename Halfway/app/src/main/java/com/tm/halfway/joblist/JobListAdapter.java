@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import com.tm.halfway.R;
-import com.tm.halfway.jobdetails.JobAddAsync;
 import com.tm.halfway.jobdetails.JobDeleteAsync;
 import com.tm.halfway.model.Job;
 
@@ -48,7 +47,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
     public void setItemsList(List<Job> itemsList) {
         clear();
 
-        if (itemsList != null){
+        if (itemsList != null) {
 
             for (Job object : itemsList) {
 
@@ -85,7 +84,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
         SharedPreferences sharedPref = context.getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
 
-        if("QUEST".equals(role)) {
+        if ("QUEST".equals(role)) {
             removeJob.setAlpha(0);
         } else {
             removeJob.setAlpha(1);
@@ -98,7 +97,7 @@ public class JobListAdapter extends ArrayAdapter<Job> {
                 fm.send(new RemoteMessage.Builder("jobs@gcm.googleapis.com")
                         .setMessageId(Integer.toString(213123))
                         .addData("my_message", "Hello World")
-                        .addData("my_action","SAY_HELLO")
+                        .addData("my_action", "SAY_HELLO")
                         .build());
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -126,11 +125,8 @@ public class JobListAdapter extends ArrayAdapter<Job> {
 
                             }
                         })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //do nothing
-                            }
+                        .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {
+                            //do nothing
                         })
                         .show();
             }
