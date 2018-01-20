@@ -58,6 +58,7 @@
         android:layout_margin="30dp"
         android:gravity="center"
         android:text="@string/client_jobs_empty_message"
+        android:visibility="gone"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 

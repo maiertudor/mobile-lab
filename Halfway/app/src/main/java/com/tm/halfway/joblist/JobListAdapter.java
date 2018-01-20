@@ -12,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 import com.tm.halfway.R;
 import com.tm.halfway.jobdetails.JobDeleteAsync;
 import com.tm.halfway.model.Job;
