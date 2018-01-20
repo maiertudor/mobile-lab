@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.tm.halfway.R;
 import com.tm.halfway.api.ApiHelper;
 import com.tm.halfway.model.Job;
+import com.tm.halfway.utils.SessionUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -104,8 +105,13 @@ public class JobDetailsFragment extends Fragment {
     }
 
     private void updateUIForAppliedStatus() {
-        mApplyBT.setVisibility(currentJob.isApplied() ? View.GONE : View.VISIBLE);
-        mYouAppliedTV.setVisibility(!currentJob.isApplied() ? View.GONE : View.VISIBLE);
+        if (!SessionUtils.isUserClient()) {
+            mApplyBT.setVisibility(currentJob.isApplied() ? View.GONE : View.VISIBLE);
+            mYouAppliedTV.setVisibility(!currentJob.isApplied() ? View.GONE : View.VISIBLE);
+        } else {
+            mApplyBT.setVisibility(View.GONE);
+            mYouAppliedTV.setVisibility(View.GONE);
+        }
     }
 
     private void refreshCurrentJob(TextView editJobName, TextView editJobDate, TextView editJobDescription, TextView editJobEmployer) {
