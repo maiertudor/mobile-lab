@@ -13,24 +13,38 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import com.tm.halfway.HalfwayApplication;
 import com.tm.halfway.R;
+import com.tm.halfway.api.ApiHelper;
 import com.tm.halfway.jobdetails.JobAddAsync;
 import com.tm.halfway.joblist.JobHelper;
+import com.tm.halfway.model.ApiCallback;
+import com.tm.halfway.model.Category;
+import com.tm.halfway.model.GetCategoriesResponse;
+import com.tm.halfway.model.GetLocationsResponse;
 import com.tm.halfway.model.Job;
+import com.tm.halfway.model.Location;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static com.tm.halfway.R.id.editJobDescription;
 import static com.tm.halfway.R.id.editJobName;
@@ -43,6 +57,11 @@ public class CreateJobFragment extends Fragment {
     private static final String TAG = "CreateJobFragment";
     private DatePickerDialog.OnDateSetListener mDataSetListener;
 
+    @BindView(R.id.jf_s_location_spinner)
+    Spinner mLocationSP;
+    @BindView(R.id.jf_s_category_spinner)
+    Spinner mCategorySP;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,10 +73,14 @@ public class CreateJobFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ButterKnife.bind(this, view);
+
         final EditText createJobName = (EditText) view.findViewById(R.id.createJobName);
         final EditText createJobDescription = (EditText) view.findViewById(R.id.createJobDescription);
         final EditText createJobDate = (EditText) view.findViewById(R.id.createJobDate);
         final EditText createJobEmployer = (EditText) view.findViewById(R.id.createJobEmployer);
+
+        configureSpinners();
 
         Button saveButton = (Button) view.findViewById(R.id.saveNewJob);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +103,8 @@ public class CreateJobFragment extends Fragment {
 
                 newJob.setDescription(String.valueOf(createJobDescription.getText()));
                 newJob.setOwner(String.valueOf(createJobEmployer.getText()));
+                newJob.setLocation(mLocationSP.getSelectedItem().toString());
+                newJob.setCategory(mCategorySP.getSelectedItem().toString());
 
                 SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
                 String token = sharedPref.getString("Authorization", "null");
@@ -136,5 +161,64 @@ public class CreateJobFragment extends Fragment {
             }
         };
 
+    }
+
+    private void configureSpinners() {
+        mCategorySP.setVisibility(View.VISIBLE);
+        mLocationSP.setVisibility(View.VISIBLE);
+        loadLocations();
+        loadCategories();
+    }
+
+    private void loadLocations() {
+        ApiHelper.getApi().getLocations().enqueue(new ApiCallback<GetLocationsResponse>() {
+            @Override
+            public void success(GetLocationsResponse response) {
+                List<String> locations = new ArrayList<>();
+                if (response.getLocations() == null)
+                    return;
+
+                for (Location location : response.getLocations()) {
+                    locations.add(location.getName());
+                }
+
+                addItemsOnSpinner(mLocationSP, locations);
+            }
+
+            @Override
+            public void failure(Exception exception) {
+
+            }
+        });
+    }
+
+    private void loadCategories() {
+        ApiHelper.getApi().getCategories().enqueue(new ApiCallback<GetCategoriesResponse>() {
+            @Override
+            public void success(GetCategoriesResponse response) {
+                List<String> locations = new ArrayList<>();
+                if (response.getCategories() == null)
+                    return;
+
+                for (Category location : response.getCategories()) {
+                    locations.add(location.getName());
+                }
+
+                addItemsOnSpinner(mCategorySP, locations);
+            }
+
+            @Override
+            public void failure(Exception exception) {
+
+            }
+        });
+    }
+
+    public void addItemsOnSpinner(Spinner spinner, List<String> entries) {
+        ArrayAdapter sortAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, entries);
+        sortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(sortAdapter);
+
+        spinner.setSelection(0, false);
     }
 }

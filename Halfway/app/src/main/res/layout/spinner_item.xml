@@ -15,4 +15,4 @@
     android:text="Ordonati dupa pret"
     android:textAlignment="center"
     android:textColor="@color/simpleBlack"
-    android:textSize="12sp" />
+    android:textSize="16sp" />

@@ -2,7 +2,9 @@ package com.tm.halfway.api;
 
 import com.tm.halfway.model.ApplicationUserResponse;
 import com.tm.halfway.model.BaseResponse;
+import com.tm.halfway.model.GetCategoriesResponse;
 import com.tm.halfway.model.GetJobResponse;
+import com.tm.halfway.model.GetLocationsResponse;
 import com.tm.halfway.model.Job;
 
 import retrofit2.Call;
@@ -35,4 +37,9 @@ public interface IHalfwayAPI {
 
     @GET("v1/jobs/user")
     Call<GetJobResponse> getClientJobs();
+
+    @GET("v1/categories")
+    Call<GetCategoriesResponse> getCategories();
+    @GET("v1/locations")
+    Call<GetLocationsResponse> getLocations();
 }

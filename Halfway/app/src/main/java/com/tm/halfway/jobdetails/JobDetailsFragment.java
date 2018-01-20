@@ -10,21 +10,32 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tm.halfway.R;
 import com.tm.halfway.api.ApiHelper;
+import com.tm.halfway.model.ApiCallback;
+import com.tm.halfway.model.Category;
+import com.tm.halfway.model.GetCategoriesResponse;
+import com.tm.halfway.model.GetLocationsResponse;
 import com.tm.halfway.model.Job;
+import com.tm.halfway.model.Location;
+import com.tm.halfway.utils.JobsOrderEnum;
 import com.tm.halfway.utils.SessionUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +60,14 @@ public class JobDetailsFragment extends Fragment {
     Button mApplyBT;
     @BindView(R.id.jdf_tv_you_applied)
     TextView mYouAppliedTV;
+    @BindView(R.id.jdf_tv_location)
+    TextView mLocationTV;
+    @BindView(R.id.jdf_tv_category)
+    TextView mCategoryTV;
+    @BindView(R.id.jf_s_location_spinner)
+    Spinner mLocationSP;
+    @BindView(R.id.jf_s_category_spinner)
+    Spinner mCategorySP;
 
     public static void openGmail(Activity activity, String[] email, String subject, String content) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -93,6 +112,8 @@ public class JobDetailsFragment extends Fragment {
 
         updateUIForAppliedStatus();
 
+        configureSpinners();
+
         editJobName.setText(currentJob.getTitle());
         editJobDescription.setText(currentJob.getDescription());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
@@ -102,6 +123,15 @@ public class JobDetailsFragment extends Fragment {
 
         SharedPreferences sharedPref = getContext().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
         String role = sharedPref.getString("Role", "null");
+    }
+
+    private void configureSpinners() {
+        mCategorySP.setVisibility(View.GONE);
+        mLocationSP.setVisibility(View.GONE);
+        mLocationTV.setVisibility(View.VISIBLE);
+        mCategoryTV.setVisibility(View.VISIBLE);
+        mLocationTV.setText(currentJob.getLocation());
+        mCategoryTV.setText(currentJob.getCategory());
     }
 
     private void updateUIForAppliedStatus() {
