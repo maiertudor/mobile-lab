@@ -129,8 +129,25 @@ public class JobsFragment extends Fragment {
         });
 
         jobsListView.setAdapter(jobListAdapter);
-        View headerView = inflater.inflate(R.layout.jobs_header_view, container, false);
-        jobsListView.addHeaderView(headerView);
+
+        if (SessionUtils.isUserClient()) {
+            View headerView = inflater.inflate(R.layout.jobs_header_view, container, false);
+            jobsListView.addHeaderView(headerView);
+
+            Button addButton = (Button) headerView.findViewById(R.id.add_button);
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CreateJobFragment createJobFragment = new CreateJobFragment();
+
+                    fragmentTransaction.replace(R.id.main_fragment, createJobFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
+        }
+
         jobsListView.setDividerHeight(0);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("TOKEN", Context.MODE_PRIVATE);
@@ -156,25 +173,6 @@ public class JobsFragment extends Fragment {
 
                 fragmentTransaction.replace(R.id.main_fragment, jobDetailsFragment);
                 fragmentTransaction.addToBackStack("JobDetails");
-                fragmentTransaction.commit();
-            }
-        });
-
-        Button addButton = (Button) headerView.findViewById(R.id.add_button);
-
-        String role = sharedPref.getString("Role", "null");
-
-        if (!SessionUtils.isUserClient()) {
-            headerView.setVisibility(View.GONE);
-        }
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CreateJobFragment createJobFragment = new CreateJobFragment();
-
-                fragmentTransaction.replace(R.id.main_fragment, createJobFragment);
-                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
